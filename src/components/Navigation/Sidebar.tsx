@@ -1,66 +1,97 @@
 
-import React from 'react';
-import { Home, Upload, BarChart3, Shield, Settings, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Home, Upload, BarChart3, Shield, Settings, Zap, ChevronRight } from 'lucide-react';
 
 export const Sidebar = () => {
+  const [activeItem, setActiveItem] = useState('Dashboard');
+  
   const menuItems = [
-    { icon: Home, label: 'Dashboard', active: true },
-    { icon: Upload, label: 'Binary Intake', active: false },
-    { icon: Zap, label: 'AI Analysis', active: false },
-    { icon: BarChart3, label: 'Reports', active: false },
-    { icon: Shield, label: 'Threats', active: false },
-    { icon: Settings, label: 'Settings', active: false },
+    { icon: Home, label: 'Dashboard', active: true, description: 'Main Control Center' },
+    { icon: Upload, label: 'Binary Intake', active: false, description: 'File Upload Portal' },
+    { icon: Zap, label: 'AI Analysis', active: false, description: 'Neural Processing' },
+    { icon: BarChart3, label: 'Reports', active: false, description: 'Intelligence Reports' },
+    { icon: Shield, label: 'Threats', active: false, description: 'Threat Detection' },
+    { icon: Settings, label: 'Settings', active: false, description: 'System Configuration' },
   ];
 
+  const handleItemClick = (label: string) => {
+    setActiveItem(label);
+  };
+
   return (
-    <div className="w-64 bg-slate-900/90 border-r border-cyan-500/20 backdrop-blur-sm">
-      <div className="p-6">
+    <div className="w-64 bg-slate-900/95 border-r border-cyan-500/30 backdrop-blur-sm relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-pink-500 to-transparent animate-pulse"></div>
+      </div>
+      
+      <div className="p-6 relative z-10">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-pink-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-pink-500 flex items-center justify-center relative">
             <Shield className="w-6 h-6 text-white" />
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-cyan-500 to-pink-500 animate-pulse opacity-50"></div>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-cyan-300">ShadowGrid</h2>
-            <p className="text-xs text-slate-400">v2.1.0</p>
+            <h2 className="text-xl font-bold text-cyan-300 tracking-wider">ShadowGrid</h2>
+            <p className="text-xs text-slate-400 font-mono">v2.1.0 • CLASSIFIED</p>
           </div>
         </div>
       </div>
       
-      <nav className="px-4">
+      <nav className="px-4 relative z-10">
         <ul className="space-y-2">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
+            const isActive = activeItem === item.label;
             return (
               <li key={index}>
-                <a
-                  href="#"
+                <button
+                  onClick={() => handleItemClick(item.label)}
                   className={`
-                    flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
-                    ${item.active 
-                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' 
-                      : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50'
+                    w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden
+                    ${isActive 
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-pink-500/20 text-cyan-300 border border-cyan-500/50 shadow-lg shadow-cyan-500/20' 
+                      : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/70 hover:border hover:border-cyan-500/30'
                     }
                   `}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                  {item.active && (
-                    <div className="ml-auto w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-pink-500/10 animate-pulse"></div>
                   )}
-                </a>
+                  <Icon className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-cyan-400' : ''}`} />
+                  <div className="flex-1 text-left">
+                    <span className="block font-semibold">{item.label}</span>
+                    <span className="text-xs opacity-70">{item.description}</span>
+                  </div>
+                  {isActive && (
+                    <>
+                      <ChevronRight className="w-4 h-4 text-cyan-400" />
+                      <div className="absolute right-2 w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
+                    </>
+                  )}
+                </button>
               </li>
             );
           })}
         </ul>
       </nav>
       
-      <div className="absolute bottom-6 left-4 right-4">
-        <div className="bg-slate-800/50 border border-cyan-500/30 rounded-lg p-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-green-400 text-sm font-semibold">System Online</span>
+      <div className="absolute bottom-6 left-4 right-4 relative z-10">
+        <div className="bg-slate-800/70 border border-cyan-500/40 rounded-lg p-4 backdrop-blur-sm relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-cyan-500/5 animate-pulse"></div>
+          <div className="relative z-10">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50"></div>
+              <span className="text-green-400 text-sm font-semibold">System Online</span>
+            </div>
+            <p className="text-xs text-slate-400">All modules operational</p>
+            <div className="mt-2 flex space-x-1">
+              <div className="h-1 bg-green-500/30 rounded flex-1"></div>
+              <div className="h-1 bg-cyan-500/30 rounded flex-1"></div>
+              <div className="h-1 bg-pink-500/30 rounded flex-1"></div>
+            </div>
           </div>
-          <p className="text-xs text-slate-400">All modules operational</p>
         </div>
       </div>
     </div>
