@@ -1,22 +1,18 @@
-
 import React, { useState } from 'react';
 import { Home, Upload, BarChart3, Shield, Settings, Zap, ChevronRight } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 export const Sidebar = () => {
-  const [activeItem, setActiveItem] = useState('Dashboard');
+  const location = useLocation();
   
   const menuItems = [
-    { icon: Home, label: 'Dashboard', active: true, description: 'Main Control Center' },
-    { icon: Upload, label: 'Binary Intake', active: false, description: 'File Upload Portal' },
-    { icon: Zap, label: 'AI Analysis', active: false, description: 'Neural Processing' },
-    { icon: BarChart3, label: 'Reports', active: false, description: 'Intelligence Reports' },
-    { icon: Shield, label: 'Threats', active: false, description: 'Threat Detection' },
-    { icon: Settings, label: 'Settings', active: false, description: 'System Configuration' },
+    { icon: Home, label: 'Dashboard', path: '/', description: 'Main Control Center' },
+    { icon: Upload, label: 'Binary Intake', path: '/binary-intake', description: 'File Upload Portal' },
+    { icon: Zap, label: 'AI Analysis', path: '/ai-analysis', description: 'Neural Processing' },
+    { icon: BarChart3, label: 'Reports', path: '/reports', description: 'Intelligence Reports' },
+    { icon: Shield, label: 'Threats', path: '/threats', description: 'Threat Detection' },
+    { icon: Settings, label: 'Settings', path: '/settings', description: 'System Configuration' },
   ];
-
-  const handleItemClick = (label: string) => {
-    setActiveItem(label);
-  };
 
   return (
     <div className="w-64 bg-slate-900/95 border-r border-cyan-500/30 backdrop-blur-sm relative overflow-hidden">
@@ -43,11 +39,11 @@ export const Sidebar = () => {
         <ul className="space-y-2">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
-            const isActive = activeItem === item.label;
+            const isActive = location.pathname === item.path;
             return (
               <li key={index}>
-                <button
-                  onClick={() => handleItemClick(item.label)}
+                <Link
+                  to={item.path}
                   className={`
                     w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden
                     ${isActive 
@@ -70,7 +66,7 @@ export const Sidebar = () => {
                       <div className="absolute right-2 w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></div>
                     </>
                   )}
-                </button>
+                </Link>
               </li>
             );
           })}
