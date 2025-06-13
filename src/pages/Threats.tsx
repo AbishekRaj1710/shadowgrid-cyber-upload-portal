@@ -1,9 +1,18 @@
 
 import { Header } from "@/components/Header";
 import { Sidebar } from "@/components/Navigation/Sidebar";
+import { SecurityDashboard } from "@/components/SecurityDashboard";
 import { Shield, AlertTriangle, Target, Eye } from "lucide-react";
+import { useActivityLog } from "@/contexts/ActivityLogContext";
+import { useEffect } from "react";
 
 const Threats = () => {
+  const { logActivity } = useActivityLog();
+  
+  useEffect(() => {
+    logActivity('PAGE_ACCESS', 'Accessed Threat Detection Center', 10);
+  }, [logActivity]);
+
   const threats = [
     { id: 1, name: "Trojan.Win32.Agent", severity: "High", status: "Active", detected: "2h ago" },
     { id: 2, name: "Ransomware.Locky", severity: "Critical", status: "Contained", detected: "4h ago" },
@@ -18,6 +27,10 @@ const Threats = () => {
       case "Medium": return "text-yellow-400 border-yellow-500 bg-yellow-500/20";
       default: return "text-green-400 border-green-500 bg-green-500/20";
     }
+  };
+
+  const handleThreatAction = (action: string, threatName: string) => {
+    logActivity('THREAT_ACTION', `${action} performed on ${threatName}`, action === 'Quarantine' ? 25 : 15);
   };
 
   return (
@@ -36,10 +49,15 @@ const Threats = () => {
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent mb-4">
-                  Threat Detection Center
+                  Threat Detection & Activity Monitor
                 </h1>
-                <p className="text-xl text-cyan-300 mb-2">Advanced Threat Monitoring</p>
-                <p className="text-slate-400">Real-time malware detection and analysis</p>
+                <p className="text-xl text-cyan-300 mb-2">Advanced Threat Monitoring & User Behavior Analysis</p>
+                <p className="text-slate-400">Real-time malware detection with comprehensive activity logging</p>
+              </div>
+              
+              {/* Security Dashboard */}
+              <div className="mb-8">
+                <SecurityDashboard />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -109,8 +127,18 @@ const Threats = () => {
                           <td className="py-3 text-cyan-300">{threat.status}</td>
                           <td className="py-3 text-slate-400">{threat.detected}</td>
                           <td className="py-3">
-                            <button className="text-pink-400 hover:text-pink-300 mr-3">View</button>
-                            <button className="text-cyan-400 hover:text-cyan-300">Quarantine</button>
+                            <button 
+                              onClick={() => handleThreatAction('View', threat.name)}
+                              className="text-pink-400 hover:text-pink-300 mr-3"
+                            >
+                              View
+                            </button>
+                            <button 
+                              onClick={() => handleThreatAction('Quarantine', threat.name)}
+                              className="text-cyan-400 hover:text-cyan-300"
+                            >
+                              Quarantine
+                            </button>
                           </td>
                         </tr>
                       ))}

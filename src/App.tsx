@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ActivityLogProvider } from "@/contexts/ActivityLogContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import BinaryIntake from "./pages/BinaryIntake";
@@ -20,21 +21,23 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ProtectedRoute>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/binary-intake" element={<BinaryIntake />} />
-              <Route path="/ai-analysis" element={<AIAnalysis />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/threats" element={<Threats />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </ProtectedRoute>
-        </BrowserRouter>
+        <ActivityLogProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ProtectedRoute>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/binary-intake" element={<BinaryIntake />} />
+                <Route path="/ai-analysis" element={<AIAnalysis />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/threats" element={<Threats />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </ProtectedRoute>
+          </BrowserRouter>
+        </ActivityLogProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

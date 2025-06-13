@@ -1,10 +1,10 @@
-
 import React, { useState, useCallback } from 'react';
 import { FileUploadZone } from './FileUpload/FileUploadZone';
 import { FileMetadataCard } from './FileUpload/FileMetadataCard';
 import { AnalysisButton } from './FileUpload/AnalysisButton';
 import { AnalysisResults } from './FileUpload/AnalysisResults';
 import { useToast } from '@/hooks/use-toast';
+import { useActivityLog } from '@/contexts/ActivityLogContext';
 
 export interface FileData {
   name: string;
@@ -48,6 +48,7 @@ export const FileUploadSection = () => {
   const [analysisResults, setAnalysisResults] = useState<AnalysisResultsData | null>(null);
   const [actualFile, setActualFile] = useState<File | null>(null);
   const { toast } = useToast();
+  const { logActivity } = useActivityLog();
 
   const generateMockHash = () => {
     return Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
@@ -58,6 +59,7 @@ export const FileUploadSection = () => {
     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
     
     if (!allowedTypes.includes(fileExtension)) {
+      logActivity('FILE_UPLOAD_FAILED', `Invalid file type attempted: ${fileExtension}`, 40);
       toast({
         title: "Invalid File Type",
         description: "Please upload .exe, .apk, .dll, or .bin files only.",
@@ -67,6 +69,7 @@ export const FileUploadSection = () => {
     }
 
     setIsUploading(true);
+    logActivity('FILE_UPLOAD_START', `Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 15);
     
     // Simulate upload process
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -84,17 +87,20 @@ export const FileUploadSection = () => {
     setIsUploading(false);
     setAnalysisResults(null);
     
+    logActivity('FILE_UPLOAD_SUCCESS', `Successfully uploaded ${file.name} - Hash: ${fileData.hash.substring(0, 16)}...`, 10);
+    
     toast({
       title: "File Uploaded Successfully",
       description: `${file.name} has been ingested by ShadowGrid`,
       className: "border-cyan-500 bg-slate-800 text-cyan-100",
     });
-  }, [toast]);
+  }, [toast, logActivity]);
 
   const handleStartAnalysis = async () => {
     if (!uploadedFile || !actualFile) return;
 
     setIsAnalyzing(true);
+    logActivity('ANALYSIS_START', `Initiating full-spectrum analysis on ${uploadedFile.name}`, 20);
     
     try {
       const formData = new FormData();
@@ -113,6 +119,7 @@ export const FileUploadSection = () => {
       console.log('Full ShadowGrid analysis results:', results);
       
       setAnalysisResults(results);
+      logActivity('ANALYSIS_SUCCESS', `Analysis completed for ${uploadedFile.name} - Backend connection successful`, 5);
       
       toast({
         title: "Full-Spectrum Analysis Complete",
@@ -122,6 +129,8 @@ export const FileUploadSection = () => {
       
     } catch (error) {
       console.error('Analysis error:', error);
+      
+      logActivity('ANALYSIS_BACKEND_FAILED', `Backend connection failed for ${uploadedFile.name} - Using mock results`, 30);
       
       toast({
         title: "Analysis Failed",
@@ -151,6 +160,8 @@ export const FileUploadSection = () => {
           visualization: "COMPLETE"
         }
       });
+      
+      logActivity('ANALYSIS_MOCK_COMPLETE', `Mock analysis completed for ${uploadedFile.name}`, 10);
     }
     
     setIsAnalyzing(false);
